@@ -1,14 +1,20 @@
 package com.cbt.utilities;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -16,6 +22,7 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.OutputType;
 
 public class BrowserUtils {
 	/*
@@ -113,8 +120,6 @@ public class BrowserUtils {
 
 	public static WebElement fluentWait(final WebElement webElement, int timeinsec) {
 		FluentWait<WebDriver> wait = new FluentWait<WebDriver>(Driver.getDriver())
-				// .withTimeout(timeinsec, TimeUnit.SECONDS).pollingEvery(timeinsec,
-				// TimeUnit.SECONDS)
 				.withTimeout(Duration.ofSeconds(timeinsec)).pollingEvery(Duration.ofSeconds(timeinsec))
 				.ignoring(NoSuchElementException.class);
 		WebElement element = wait.until(new Function<WebDriver, WebElement>() {
@@ -125,4 +130,48 @@ public class BrowserUtils {
 		return element;
 	}
 
+	/*
+	 *	Takes screen 
+	 * 	@param name
+	 * 	takes a name of a test and returns a path to screenshot takes
+	 *
+	 *
+	 **/
+	
+	public static String getScreenshot(String name) throws IOException {
+		// name the screenshot with the current date time to avoid duplicate name
+		String date = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+		// TakeScreenshot -- > interface from selenium which takes screenshots
+		TakesScreenshot ts = (TakesScreenshot) Driver.getDriver();
+		File source = ts.getScreenshotAs(OutputType.FILE);
+		// full path to the screenshot location 
+		String target = System.getProperty("user.dir") + "/test-output/Screenshots/" + name + date + ".png";
+
+		File finalDestination = new File(target);
+		
+		// save the screenshot to the path given
+		FileUtils.copyFile(source, finalDestination);
+		return target;
+	}
+
 }
+
+// Shared via @Webclipse. To open this file type:
+// /code-open BrowserUtils.java 1-144 9u5WYw
+
+// public static WebElement fluentWait(final WebElement webElement, int
+// timeinsec) {
+// FluentWait<WebDriver> wait = new FluentWait<WebDriver>(Driver.getDriver())
+// // .withTimeout(timeinsec, TimeUnit.SECONDS).pollingEvery(timeinsec,
+// // TimeUnit.SECONDS)
+// .withTimeout(Duration.ofSeconds(timeinsec)).pollingEvery(Duration.ofSeconds(timeinsec))
+// .ignoring(NoSuchElementException.class);
+// WebElement element = wait.until(new Function<WebDriver, WebElement>() {
+// public WebElement apply(WebDriver driver) {
+// return webElement;
+// }
+// });
+// return element;
+// }
+//
+// }
